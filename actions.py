@@ -21,7 +21,7 @@ class Actions:
     def go(game, list_of_words, number_of_parameters):
         """
         Move the player in the direction specified by the parameter.
-        The parameter must be a cardinal direction (N, E, S, O).
+        The parameter must be a cardinal direction (N, E, S, O, U, D).
 
         Args:
             game (Game): The game object.
@@ -53,11 +53,59 @@ class Actions:
             print(MSG1.format(command_word=command_word))
             return False
 
-        # Get the direction from the list of words.
-        direction = list_of_words[1]
+        # Get the raw direction from the list of words.
+        raw_direction = list_of_words[1]
+        direction_key = raw_direction.lower()
+
+        # Dictionnaire de synonymes -> direction canonique
+        direction_aliases = {
+            "n": "N",
+            "nord": "N",
+
+            "s": "S",
+            "sud": "S",
+
+            "e": "E",
+            "est": "E",
+
+            "o": "O",
+            "ouest": "O",
+
+            "u": "U",
+            "up": "U",
+            "haut": "U",
+
+            "d": "D",
+            "down": "D",
+            "bas": "D",
+        }
+
+        # Vérifier si la direction entrée est reconnue (synonyme ou lettre)
+        if direction_key not in direction_aliases:
+            print(f"\nDirection '{raw_direction}' non reconnue.\n")
+            # On réaffiche la salle actuelle
+            print(player.current_room.get_long_description())
+            return False
+
+        # Direction canonique (N, E, S, O, U, D)
+        direction = direction_aliases[direction_key]
+
+        # Construire automatiquement l'ensemble des directions utilisées dans la map
+        valid_directions = set()
+        for room in game.rooms:
+            valid_directions.update(room.exits.keys())
+
+        # Si la direction canonique n'existe dans aucune salle de la map,
+        # on la considère comme non reconnue.
+        if direction not in valid_directions:
+            print(f"\nDirection '{raw_direction}' non reconnue.\n")
+            print(player.current_room.get_long_description())
+            return False
+
         # Move the player in the direction specified by the parameter.
         player.move(direction)
         return True
+
 
     def quit(game, list_of_words, number_of_parameters):
         """

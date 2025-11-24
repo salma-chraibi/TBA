@@ -30,33 +30,61 @@ class Game:
         
         # Setup rooms
 
-        forest = Room("Forest", "une forêt enchantée. Vous entendez une brise légère à travers la cime des arbres.")
-        self.rooms.append(forest)
-        tower = Room("Tower", "une immense tour en pierre qui s'élève au dessus des nuages.")
-        self.rooms.append(tower)
-        cave = Room("Cave", "une grotte profonde et sombre. Des voix semblent provenir des profondeurs.")
-        self.rooms.append(cave)
-        cottage = Room("Cottage", "un petit chalet pittoresque avec un toit de chaume. Une épaisse fumée verte sort de la cheminée.")
-        self.rooms.append(cottage)
-        swamp = Room("Swamp", "un marécage sombre et ténébreux. L'eau bouillonne, les abords sont vaseux.")
-        self.rooms.append(swamp)
-        castle = Room("Castle", "un énorme château fort avec des douves et un pont levis. Sur les tours, des flèches en or massif.")
-        self.rooms.append(castle)
+        Rue_Montfleur = Room("Rue de Montfleur", "dans la rue de Montfleur. Il y a des accès vers les maisons voisines et des traces de pneus.")
+        self.rooms.append(Rue_Montfleur)
+
+        Maison_crime = Room("Maison du crime", "dans la maison du crime. Il y a des traces de lutte et une atmosphère pesante.")
+        self.rooms.append(Maison_crime)
+
+        Durand = Room("Maison de Durand", "dans la maison de Durand. Il y a une clé suspecte et des vêtements tachés.")
+        self.rooms.append(Durand)
+
+        Lenoir = Room("Maison de Madame Lenoir", "dans la maison de Madame Lenoir. Il y a une lettre mystérieuse et une fenêtre donnant sur la rue.")
+        self.rooms.append(Lenoir)
+
+        Café = Room("Café du Marchand", "Vous êtes dans le café du Marchand. Il y a des rumeurs qui circulent et un carnet d’habitudes des voisins.")
+        self.rooms.append(Café)
+
+        Commissariat = Room("Commissariat", "dans le commissariat. Il y a un policier prêt à analyser les preuves.")
+        self.rooms.append(Commissariat)
+
+        Parc = Room("Parc de Montfleur", "dans le parc de Montfleur. Il y a un témoin qui dit avoir vu une silhouette.")
+        self.rooms.append(Parc)
+ 
+        Bibliotheque = Room("Bibliothèque", "dans la bibliothèque. Il y a des archives poussiéreuses et des livres anciens.")
+        self.rooms.append(Bibliotheque)
+ 
+        Grenier = Room("Grenier", "dans le grenier de la maison du crime. Il y a des vieilles photos et une malle poussiéreuse.")
+        self.rooms.append(Grenier)
+ 
+        Cave = Room("Cave", "dans la cave de la maison du crime. Il y a des cartons humides et un coffre verrouillé.")
+        self.rooms.append(Cave)
+ 
+        Jardin = Room("Jardin", "dans le jardin de la maison du crime. Il y a des buissons épais et une arme dissimulée.")
+        self.rooms.append(Jardin)
+
+        Morgue = Room("Morgue de Montfleur","dans la morgue de Montfleur. L’air est glacial, des corps reposent sous des draps blancs, et une odeur de formol flotte.")
+        self.rooms.append(Morgue)
         
 
         # Create exits for rooms
-
-        forest.exits = {"N" : cave, "E" : None , "S" : castle, "O" : None}
-        tower.exits = {"N" : cottage, "E" : None, "S" : None, "O" : None}
-        cave.exits = {"N" : None, "E" : cottage, "S" : forest, "O" : None}
-        cottage.exits = {"N" : None, "E" : None, "S" : tower, "O" : cave}
-        swamp.exits = {"N" : tower, "E" : None, "S" : None, "O" : castle}
-        castle.exits = {"N" : forest, "E" : swamp, "S" : None, "O" : None}
+        Rue_Montfleur.exits = {"E": Maison_crime, "N": Durand, "S": Lenoir, "O": Café}
+        Maison_crime.exits = {"O": Rue_Montfleur, "U": Grenier, "D": Cave, "E": Jardin}
+        Durand.exits = {"S": Rue_Montfleur, "O": Café}
+        Lenoir.exits = {"N": Rue_Montfleur, "S": Parc}
+        Café.exits = {"E": Rue_Montfleur, "N": Commissariat}
+        Commissariat.exits = {"S": Café,"E": Morgue}
+        Parc.exits = {"N": Lenoir, "E": Bibliotheque}
+        Bibliotheque.exits = {"O": Parc}
+        Grenier.exits = {"D": Maison_crime}
+        Cave.exits = {"U": Maison_crime}
+        Jardin.exits = {"O": Maison_crime}
+        Morgue.exits = {"O": Commissariat}
 
         # Setup player and starting room
 
         self.player = Player(input("\nEntrez votre nom: "))
-        self.player.current_room = swamp
+        self.player.current_room = Maison_crime
 
     # Play the game
     def play(self):
@@ -85,10 +113,17 @@ class Game:
             command.action(self, list_of_words, command.number_of_parameters)
 
     # Print the welcome message
-    def print_welcome(self):
-        print(f"\nBienvenue {self.player.name} dans ce jeu d'aventure !")
-        print("Entrez 'help' si vous avez besoin d'aide.")
-        #
+    def print_welcome(self):     
+        print(f"\nBienvenue {self.player.name} dans Crime à Montfleur !")
+        print("Entrez 'help' si vous avez besoin d'aide.\n")
+ 
+    # Scénario d’introduction
+        print("Une nuit sombre vient de tomber sur Montfleur...")
+        print("Un crime mystérieux a été commis dans une maison de la rue principale.")
+        print("Les voisins murmurent, les témoins hésitent, et les preuves semblent se cacher dans chaque recoin.")
+        print("Votre mission : explorer les lieux, interroger les habitants, et découvrir la vérité.\n")
+ 
+    # Description de la salle de départ
         print(self.player.current_room.get_long_description())
     
 
