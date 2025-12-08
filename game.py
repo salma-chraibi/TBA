@@ -101,24 +101,24 @@ class Game:
         self.player.current_room = Maison_crime
         self.player.history.append(self.player.current_room)
 
-        # Setup items in rooms
-        sword = Item("sword", "une épée au fil tranchant comme un rasoir", 2)
-        Maison_crime.inventory["sword"] = sword
+        # Setup items in rooms (alignés avec les descriptions des lieux)
+        knife = Item("knife", "un couteau ensanglanté", 0.5)
+        Maison_crime.inventory["knife"] = knife
 
-        shield = Item("shield", "un bouclier léger et résistant", 1)
-        Durand.inventory["shield"] = shield
+        key = Item("key", "une clé suspecte", 0.2)
+        Durand.inventory["key"] = key
 
-        helmet = Item("helmet", "un casque en métal", 1)
-        Lenoir.inventory["helmet"] = helmet
+        letter = Item("letter", "une lettre mystérieuse", 0.001)
+        Lenoir.inventory["letter"] = letter
 
-        key = Item("key", "une clé suspecte", 1)
-        Cave.inventory["key"] = key
+        chest = Item("chest", "un coffre verrouillé", 5)
+        Cave.inventory["chest"] = chest
 
-        torch = Item("torch", "une torche en bois et tissu", 1)
-        Grenier.inventory["torch"] = torch
+        photos = Item("photos", "des vieilles photos", 0.5)
+        Grenier.inventory["photos"] = photos
 
-        coin = Item("coin", "une pièce de monnaie ancienne", 0)
-        Jardin.inventory["coin"] = coin
+        weapon = Item("weapon", "une arme dissimulée", 3)
+        Jardin.inventory["weapon"] = weapon
 
     # Play the game
     def play(self):
