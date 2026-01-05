@@ -1,46 +1,37 @@
-# Define the Room class.
+"""
+Classe `Room`.
+
+Représente une pièce de la carte, ses sorties, son inventaire et les personnages présents.
+"""
 
 class Room:
-
-    # Define the constructor. 
     def __init__(self, name, description):
         self.name = name
         self.description = description
         self.exits = {}
         self.inventory = {}
-    
-    # Define the get_exit method.
+        self.characters = {}  # PNJ présents dans la salle
+
     def get_exit(self, direction):
+        """Retourne la salle dans la direction donnée ou `None`."""
+        return self.exits.get(direction, None)
 
-        # Return the room in the given direction if it exists.
-        if direction in self.exits.keys():
-            return self.exits[direction]
-        else:
-            return None
-    
-    # Return a string describing the room's exits.
     def get_exit_string(self):
-        exit_string = "Sorties: " 
-        for exit in self.exits.keys():
-            if self.exits.get(exit) is not None:
-                exit_string += exit + ", "
-        exit_string = exit_string.strip(", ")
-        return exit_string
+        """Retourne une chaîne énumérant les sorties de la pièce."""
+        exit_string = "Sorties: "
+        for e in self.exits.keys():
+            if self.exits.get(e) is not None:
+                exit_string += e + ", "
+        return exit_string.strip(", ")
 
-    # Return a long description of this room including exits.
     def get_long_description(self):
+        """Description longue de la pièce, incluant les sorties."""
         return f"\nVous êtes dans {self.description}\n\n{self.get_exit_string()}\n"
 
     def get_inventory(self):
-        """
-        Retourne une chaîne représentant l'inventaire de la pièce.
-        
-        Returns:
-            str: La chaîne représentant l'inventaire
-        """
+        """Retourne une chaîne décrivant les objets présents dans la pièce."""
         if len(self.inventory) == 0:
             return "\nIl n'y a rien ici.\n"
-        
         result = "\nOn voit:\n"
         for item in self.inventory.values():
             result += f"    - {item}\n"

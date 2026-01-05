@@ -28,7 +28,7 @@ class Player():
         """
         Retourne une chaîne représentant l'inventaire du joueur.
         
-        Returns:
+        Retourne:
             str: La chaîne représentant l'inventaire
         """
         if len(self.inventory) == 0:

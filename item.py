@@ -14,7 +14,7 @@ class Item:
         """
         Initialise un Item.
         
-        Args:
+        Paramètres:
             name (str): Le nom de l'objet
             description (str): La description de l'objet
             weight (int): Le poids de l'objet en kg
@@ -27,10 +27,12 @@ class Item:
         """
         Retourne une représentation textuelle de l'objet.
         
-        Returns:
+        Retourne:
             str: Une chaîne formatée avec le nom, la description et le poids
             
         Exemple:
             sword : une épée au fil tranchant comme un rasoir (2 kg)
         """
+        if self.weight == 0:
+            return f"{self.name} : {self.description}"
         return f"{self.name} : {self.description} ({self.weight} kg)"
