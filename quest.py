@@ -64,8 +64,8 @@ class Quest:
         True
         """
         self.is_active = True
-        print(f"\n🗡️  Nouvelle quête activée: {self.title}")
-        print(f"📝 {self.description}\n")
+        print(f"\nNouvelle quête activée: {self.title}")
+        print(f"{self.description}\n")
 
 
     def complete_objective(self, objective, player=None):
@@ -94,7 +94,7 @@ class Quest:
         """
         if objective in self.objectives and objective not in self.completed_objectives:
             self.completed_objectives.append(objective)
-            print(f"✅ Objectif accompli: {objective}")
+            print(f"[OK] Objectif accompli: {objective}")
 
             # Check if all objectives are completed
             if len(self.completed_objectives) == len(self.objectives):
@@ -106,10 +106,10 @@ class Quest:
 
     def complete_quest(self, player=None):
         """
-        Mark the quest as completed and give reward to player.
+        Mark the quest as completed and display reward message.
         
         Args:
-            player: The player object to give the reward to (optional).
+            player: The player object (optional).
             
         Examples:
         
@@ -118,19 +118,20 @@ class Quest:
         False
         >>> quest.complete_quest() # doctest: +NORMALIZE_WHITESPACE
         <BLANKLINE>
-        🏆 Quête terminée: Final Quest
-        🎁 Récompense: Trophy
+        Quête terminée: Final Quest
         <BLANKLINE>
         >>> quest.is_completed
         True
         """
         if not self.is_completed:
             self.is_completed = True
-            print(f"\n🏆 Quête terminée: {self.title}")
-            if self.reward:
-                print(f"🎁 Récompense: {self.reward}")
-                if player:
-                    player.add_reward(self.reward)
+            print(f"\n\033[92mQuête terminée: {self.title}\033[0m")
+            
+            # Display reward message based on quest title
+            if self.title == "Résoudre l'énigme":
+                print("Bravo, vous avez résolu l'enquête !")
+            else:
+                print("Excellent, votre enquête avance ! Continuez !")
             print()
 
 
@@ -162,7 +163,7 @@ class Quest:
         if not self.is_active:
             return f"❓ {self.title} (Non activée)"
         if self.is_completed:
-            return f"✅ {self.title} (Terminée)"
+            return f"[OK] {self.title} (Terminée)"
         completed_count = len(self.completed_objectives)
         total_count = len(self.objectives)
         return f"⏳ {self.title} ({completed_count}/{total_count} objectifs)"
@@ -188,13 +189,13 @@ class Quest:
         >>> "Progression: 5/10" in details
         True
         """
-        details = f"\n📋 Quête: {self.title}\n"
+        details = f"\nQuête: {self.title}\n"
         details += f"📖 {self.description}\n"
 
         if self.objectives:
             details += "\nObjectifs:\n"
             for objective in self.objectives:
-                status = "✅" if objective in self.completed_objectives else "⬜"
+                status = "[X]" if objective in self.completed_objectives else "[ ]"
                 objective_text = self._format_objective_with_progress(objective, current_counts)
                 details += f"  {status} {objective_text}\n"
 

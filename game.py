@@ -42,6 +42,10 @@ class Game:
         self.required_items = {"key", "photos", "chest", "knife", "weapon", "letter"}
         # Accused person
         self.accused = None
+        # Track visited crime scene rooms for Quest 1
+        self.visited_crime_scene_rooms = set()
+        # Track collected items for Quest 1
+        self.collected_items = set()
     
     # Game setup
     def setup(self):
@@ -139,7 +143,7 @@ class Game:
 
         # Create quests
         quest1 = Quest("Inspecter la maison du crime", 
-                      "Inspecter toutes les pièces de la maison du crime (Grenier, Maison, Sous-Sol, Jardin) et trouvez des indices (objets: photos, couteau, coffre, arme)",
+                      "Inspecter toutes les pièces de la maison du crime (Grenier, Maison, Sous-Sol, Jardin) et trouvez des indices",
                       ["Visiter le Grenier", "Visiter le Sous-Sol (Cave)", "Visiter le Jardin", "Récupérer les indices"],
                       "Nouvelles pistes découvertes")
         quest1.activate()
@@ -235,7 +239,7 @@ class Game:
         Lenoir.characters["Lenoir"] = lenoir_pnj
 
         policier = character.Character("Policier", "un enquêteur du commissariat", Commissariat,
-                             ["Apportez-moi des preuves.", "Vous devez analyser ces 6 objets: clé, photos, coffre, couteau, arme, lettre.", "Les indices pointent vers Durand - accusez-le quand vous serez sûr!", "La vérité finira par éclater."])
+                             ["Apportez-moi des preuves.", "Vous devez analyser ces 6 objets: clé, photos, coffre, couteau, arme, lettre.", "Les indices pointent vers Durand - accusez-le quand vous serez sur!", "La vérité finira par éclater."])
         Commissariat.characters["Policier"] = policier
 
         # NPC at the morgue: medical examiner providing analysis and autopsies
@@ -243,9 +247,9 @@ class Game:
                                [
                                 "Rapport préliminaire: sur la scène du crime j'ai observé une blessure pénétrante, du sang et un couteau trouvé sur place (voir 'knife' dans la Maison du crime).",
                                 "Autopsie: la cause du décès semble être une plaie thoracique. L'angle et la profondeur indiquent une attaque rapprochée; peu de signes de défense.",
-                                "🔍 ÉLÉMENTS À ANALYSER (6 OBJETS): clé ('key'), photos ('photos'), coffre ('chest'), couteau ('knife'), arme ('weapon'), lettre ('letter'). Tous ces objets doivent être apportés au laboratoire pour analyse complète.",
+                                "ELEMENTS A ANALYSER (6 OBJETS): clé ('key'), photos ('photos'), coffre ('chest'), couteau ('knife'), arme ('weapon'), lettre ('letter'). Tous ces objets doivent être apportés au laboratoire pour analyse complète.",
                                 "Analyse circonstancielle: Durand s'est montré nerveux et s'est déplacé - il a quitté 'Maison de Durand' et est allé à 'Rue de Montfleur'. Lenoir a entendu un bruit, et le Policier centralise les preuves. Durand est notre suspect principal.",
-                                "💡 COUPABLE PROBABLE: Durand! Voici pourquoi: nervosité suspecte, possession de la clé, et ses déplacements coïncident avec l'heure du crime. Les preuves l'incriminent fortement.",
+                                "COUPABLE PROBABLE: Durand! Voici pourquoi: nervosité suspecte, possession de la clé, et ses déplacements coïncident avec l'heure du crime. Les preuves l'incriminent fortement.",
                                 "Conclusion et recommandations: la victime a été attaquée sur place. Accusez Durand au commissariat une fois que vous aurez recueilli toutes les preuves."
                                ])
         Morgue.characters["Médecin légiste"] = medecin_legiste
@@ -256,7 +260,7 @@ class Game:
                                 "Bienvenue au laboratoire. Vous devez analyser 6 objets essentiels: clé, photos, coffre, couteau, arme, et lettre.",
                                 "J'ai tous les équipements nécessaires pour tester ces preuves et révéler la vérité.",
                                 "Une fois tous les objets analysés, vous aurez suffisamment de preuves pour accuser le meurtrier.",
-                                "🔎 Les résultats montrent que Durand est impliqué - allez l'accuser au commissariat!"
+                                "Les résultats montrent que Durand est impliqué - allez l'accuser au commissariat!"
                                ])
         Labo.characters["Scientifique"] = scientifique
 
@@ -303,6 +307,19 @@ class Game:
             return True
         
         return False
+    
+    def check_quest1_completion(self):
+        """
+        Check if Quest 1 should be completed.
+        Quest 1 is complete when player has visited all crime scene rooms and collected all items.
+        """
+        required_rooms = {"Grenier", "Maison du crime", "Cave", "Jardin"}
+        required_items = {"photos", "knife", "chest", "weapon"}
+        
+        if self.visited_crime_scene_rooms == required_rooms and self.collected_items == required_items:
+            quest1 = self.quest_manager.get_quest_by_title("Inspecter la maison du crime")
+            if quest1 and not quest1.is_completed:
+                quest1.complete_quest(self.player)
 
     def play(self):
         self.setup()
@@ -311,7 +328,7 @@ class Game:
         while not self.finished:
             # Check loose condition
             if self.loose():
-                print("\n❌ VOUS AVEZ PERDU!")
+                print("\nVOUS AVEZ PERDU!")
                 if self.displacement_count > 40:
                     print(f"Vous avez dépassé les 4 jours d'investigation ({self.displacement_count} déplacements).")
                 elif self.accused and self.accused.lower() != "durand":
@@ -323,7 +340,7 @@ class Game:
             
             # Check win condition
             if self.win():
-                print("\n✅ VOUS AVEZ GAGNÉ!")
+                print("\nVOUS AVEZ GAGNÉ!")
                 print(f"Vous avez résolu l'énigme en {self.displacement_count} déplacements!")
                 print("Durand a été arrêté et sera jugé pour ses crimes.")
                 self.finished = True
@@ -382,17 +399,6 @@ class Game:
             seen.add(id(character))
             old_room = character.current_room
             moved = character.move()
-            # Only display True/False and detailed messages for Durand
-            if character.name == "Durand":
-                print(f"\n{character.name} s'est déplacé? {moved}")
-                if moved:
-                    if character.current_room is not old_room:
-                        new_room = character.current_room
-                        print(f"{character.name} a quitté '{old_room.name}' et est allé à '{new_room.name}'.")
-                    else:
-                        print(f"{character.name} a tenté de se déplacer mais reste dans '{old_room.name}'.")
-                else:
-                    print(f"{character.name} n'a pas bougé (reste dans '{old_room.name}').")
             # Keep collecting events for later processing
             if moved and character.current_room is not old_room:
                 new_room = character.current_room
@@ -445,13 +451,10 @@ class Game:
         
         # Display time limit information
         print("="*60)
-        print("⏰ CONDITIONS DE L'ENQUÊTE")
+        print("CONDITIONS DE L'ENQUÊTE")
         print("="*60)
         print("Temps disponible: 4 jours = 40 déplacements")
         print("(Les déplacements dans le Grenier, Jardin, Cave et Labo ne comptent pas)")
-        print()
-        print("Éléments à analyser: 6 objets (clé, photos, coffre, couteau, arme, lettre)")
-        print("Coupable à accuser: Durand")
         print()
         print("Tapez 'quests' pour voir vos quêtes et le temps restant")
         print("="*60 + "\n")

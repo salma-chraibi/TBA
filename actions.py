@@ -50,6 +50,12 @@ class Actions:
         # Check if player actually moved
         new_room = player.current_room
         if old_room != new_room:
+            # Track crime scene rooms for Quest 1
+            if new_room.name in ["Grenier", "Maison du crime", "Cave", "Jardin"]:
+                game.visited_crime_scene_rooms.add(new_room.name)
+                # Check if Quest 1 should be completed
+                game.check_quest1_completion()
+            
             # Count displacement if not in excluded rooms
             excluded_rooms = {"Grenier", "Jardin", "Cave", "Labo du commissariat"}
             if new_room.name not in excluded_rooms and old_room.name not in excluded_rooms:
@@ -62,7 +68,7 @@ class Actions:
                     remaining_days = 4 - day_number
                     
                     print("\n" + "="*60)
-                    print(f"📅 FIN DU JOUR {day_number}")
+                    print(f"FIN DU JOUR {day_number}")
                     print("="*60)
                     print(f"Déplacements effectués: {game.displacement_count}/40")
                     print(f"Déplacements restants: {remaining_moves}")
@@ -70,13 +76,13 @@ class Actions:
                     print("="*60 + "\n")
                     
                     if remaining_days == 0:
-                        print("⚠️  DERNIER JOUR D'INVESTIGATION!\n")
+                        print("ATTENTION: Vous manquez de temps!\n")
                 else:
                     remaining_moves = 40 - game.displacement_count
                     remaining_days = (remaining_moves / 40) * 4
-                    print(f"⏱️  Déplacements: {game.displacement_count}/40 | Temps restant: ≈ {remaining_days:.1f} jours")
+                    print(f"Déplacements: {game.displacement_count}/40 | Temps restant: ≈ {remaining_days:.1f} jours")
                     if remaining_moves <= 5:
-                        print("⚠️  ATTENTION: Vous manquez de temps!")
+                        print("ATTENTION: Vous manquez de temps!")
         return True
 
 
@@ -271,6 +277,13 @@ class Actions:
         item = player.current_room.inventory.pop(item_name)
         player.inventory[item_name] = item
         print(f"\nVous avez pris l'objet '{item_name}'.\n")
+        
+        # Track items for Quest 1
+        if item_name in ["photos", "knife", "chest", "weapon"]:
+            game.collected_items.add(item_name)
+            # Check if Quest 1 should be completed
+            game.check_quest1_completion()
+        
         return True
 
     def drop(game, list_of_words, number_of_parameters):
@@ -509,46 +522,56 @@ class Actions:
         remaining_days = (remaining_moves / total_moves) * total_days
         
         print("\n" + "="*60)
-        print("🕐 TEMPS IMPARTI POUR L'ENQUÊTE")
+        print("TEMPS IMPARTI POUR L'ENQUÊTE")
         print("="*60)
         print(f"Temps total disponible: {total_days} jours = {total_moves} déplacements")
         print(f"Temps écoulé: {game.displacement_count}/{total_moves} déplacements")
         print(f"Temps restant: {remaining_moves}/{total_moves} déplacements ≈ {remaining_days:.1f} jours")
         print("="*60)
         
-        print("\n📋 QUÊTES ACTIVES/DISPONIBLES:\n")
+        print("\nQUÊTES ACTIVES/DISPONIBLES:\n")
         
         # Display chronological quests
         for i, quest in enumerate(game.quest_manager.quests, 1):
             if i <= 8:  # Chronological quests
                 status = "✓" if quest.is_completed else "○"
-                active = "🔴 ACTIVE" if quest.is_active else "🔵 Inactive"
+                if quest.is_completed:
+                    active = "\033[92mFINISHED\033[0m"  # Green
+                elif quest.is_active:
+                    active = "\033[91mACTIVE\033[0m"  # Red
+                else:
+                    active = "\033[94mINACTIVE\033[0m"  # Blue
                 print(f"{status} Quest {i}: {quest.title} ({active})")
                 print(f"   Description: {quest.description}")
                 if quest.objectives:
                     print(f"   Objectifs: {', '.join(quest.objectives)}")
                 print()
         
-        print("\n📌 QUÊTES OPTIONNELLES (non-chronologiques):\n")
+        print("\nQUÊTES OPTIONNELLES (non-chronologiques):\n")
         
         # Display non-chronological quests
         for i, quest in enumerate(game.quest_manager.quests, 1):
             if i > 8:  # Non-chronological quests
                 status = "✓" if quest.is_completed else "○"
-                active = "🟡 OPTIONNELLE" if not quest.is_completed else "✅ COMPLÉTÉE"
+                if quest.is_completed:
+                    active = "\033[92mFINISHED\033[0m"  # Green
+                elif quest.is_active:
+                    active = "\033[91mACTIVE\033[0m"  # Red
+                else:
+                    active = "\033[94mINACTIVE\033[0m"  # Blue
                 print(f"{status} {quest.title} ({active})")
                 print(f"   Description: {quest.description}")
                 if quest.objectives:
                     print(f"   Objectifs: {', '.join(quest.objectives)}")
                 print()
         
-        print("📊 PROGRÈS D'ANALYSE:")
+        print("PROGRÈS D'ANALYSE:")
         print(f"Objets analysés: {len(game.analyzed_items)}/{len(game.required_items)}")
         if game.analyzed_items:
             print(f"Analysés: {', '.join(game.analyzed_items)}")
         missing = game.required_items - game.analyzed_items
         if missing:
-            print(f"À analyser: {', '.join(missing)}")
+            print(f"Objets restants à analyser: {len(missing)}")
         print("="*60 + "\n")
         
         return True
