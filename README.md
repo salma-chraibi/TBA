@@ -232,6 +232,74 @@ Resume des classes :
 
 ---
 
+## 11. Diagramme de classe
 
+```mermaid
+classDiagram
+    class Player {
+        -string name
+        -Room current_room
+        -list history
+        -dict inventory
+        +move(direction) bool
+        +get_inventory() string
+        +take(item_name) bool
+        +drop(item_name) bool
+    }
+    
+    class Room {
+        -string name
+        -string description
+        -dict exits
+        -dict inventory
+        -dict characters
+        +get_exit(direction) Room
+        +get_exit_string() string
+        +get_long_description() string
+    }
+    
+    class Character {
+        -string name
+        -string description
+        -Room current_room
+        -list msgs
+        +talk() string
+    }
+    
+    class Item {
+        -string name
+        -string description
+        -int weight
+    }
+    
+    class Quest {
+        -int id
+        -string name
+        -bool completed
+    }
+    
+    class Game {
+        -Player player
+        -list rooms
+        -list characters
+        -list items
+        -QuestManager quest_manager
+        +main_loop()
+        +handle_command(command) bool
+    }
+    
+    Player --> Room : "current_room"
+    Player --> Item : "carries"
+    Room --> Item : "contains"
+    Room --> Character : "contains"
+    Game --> Player : "manages"
+    Game --> Room : "manages"
+    Game --> Character : "manages"
+    Game --> Quest : "manages"
+```
+
+''Vidéo de présentation:
+
+https://drive.google.com/file/d/1HYUGb9LnZnrx4iEjhmz9V-RTNbyPpx9N/view?usp=drive_link''
 
 
