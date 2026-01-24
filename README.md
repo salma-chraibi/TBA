@@ -71,7 +71,7 @@ Deplacements gratuits :
 ---
 
 ## 5. Commandes
-
+(Important: Ne mettez pas d'espaces après les <...> !)
 Navigation :
 - `go <direction>`  
 - `back`  
