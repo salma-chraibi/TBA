@@ -94,7 +94,9 @@ class Quest:
         """
         if objective in self.objectives and objective not in self.completed_objectives:
             self.completed_objectives.append(objective)
-            print(f"[OK] Objectif accompli: {objective}")
+            # Don't print for room visit objectives
+            if not (objective.startswith("Visiter") or "Accéder" in objective):
+                print(f"Objectif accompli: {objective}")
 
             # Check if all objectives are completed
             if len(self.completed_objectives) == len(self.objectives):
@@ -282,7 +284,10 @@ class Quest:
             f"Visiter {room_name}",
             f"Explorer {room_name}",
             f"Aller à {room_name}",
-            f"Entrer dans {room_name}"
+            f"Entrer dans {room_name}",
+            f"Se rendre à {room_name}",
+            f"Accéder au {room_name}",
+            f"Accéder à {room_name}"
         ]
 
         for objective in room_objectives:
@@ -514,6 +519,29 @@ class QuestManager:
         return False
 
 
+    def complete_quest(self, quest_title, player=None):
+        """
+        Complete a quest directly by title.
+        
+        Args:
+            quest_title (str): The title of the quest to complete.
+            player: The player object (optional).
+            
+        Returns:
+            bool: True if quest was found and completed, False otherwise.
+        """
+        for quest in self.quests:
+            if quest.title == quest_title and not quest.is_completed:
+                quest.complete_quest(player)
+                # Remove from active if it was active
+                if quest in self.active_quests:
+                    self.active_quests.remove(quest)
+                # Activate next chronological quest if applicable
+                self.activate_next_chronological_quest(quest.title)
+                return True
+        return False
+
+
     def activate_next_chronological_quest(self, completed_quest_title):
         """
         Activate the next chronological quest if the completed quest is part of the main storyline.
@@ -525,7 +553,6 @@ class QuestManager:
             "Inspecter la maison du crime",
             "Faire analyser les objets au Labo",
             "Aller à la morgue",
-            "Explorer les environs",
             "Inspecter chez Mme Lenoir",
             "Analyser les objets chez Lenoir",
             "Inspecter chez Durand",

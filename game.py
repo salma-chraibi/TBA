@@ -157,27 +157,21 @@ class Game:
 
         quest2 = Quest("Faire analyser les objets au Labo",
                       "Faire analyser les objets trouvés à la maison du crime au Labo du commissariat",
-                      ["Accéder au Labo du commissariat", "Parler au Chimiste", "Faire analyser chaque objet"],
+                      ["Visiter Labo du commissariat", "Parler au Chimiste", "Faire analyser chaque objet"],
                       "Résultats d'analyse importants")
         self.quest_manager.add_quest(quest2)
 
         quest3 = Quest("Aller à la morgue",
                       "Aller à la morgue pour parler au médecin légiste",
-                      ["Se rendre à la morgue", "Parler au Médecin légiste", "Récupérer le rapport d'autopsie"],
+                      ["Visiter Morgue", "Parler au Médecin légiste"],
                       "Indices sur la cause du décès")
         self.quest_manager.add_quest(quest3)
 
-        quest4 = Quest("Explorer les environs",
-                      "Explorez les environs et cherchez des indices et des personnes à qui parler",
-                      ["Visiter le Parc", "Visiter le Café", "Interroger les témoins"],
-                      "Témoignages importants")
-        self.quest_manager.add_quest(quest4)
-
-        quest5 = Quest("Inspecter chez Mme Lenoir",
+        quest4 = Quest("Inspecter chez Mme Lenoir",
                       "Inspectez la maison de Mme Lenoir et interrogez-la",
-                      ["Visiter la maison de Lenoir", "Fouiller la maison", "Parler à Mme Lenoir"],
+                      ["Visiter Maison de Madame Lenoir", "Fouiller la maison", "Parler à Mme Lenoir"],
                       "Découvertes chez Lenoir")
-        self.quest_manager.add_quest(quest5)
+        self.quest_manager.add_quest(quest4)
 
         quest6 = Quest("Analyser les objets chez Lenoir",
                       "Faire analyser les objets trouvés chez Lenoir au commissariat",
@@ -187,7 +181,7 @@ class Game:
 
         quest7 = Quest("Inspecter chez Durand",
                       "Inspectez chez Durand puis trouvez-le et interrogez-le",
-                      ["Visiter la maison de Durand", "Fouiller la maison", "Trouver Durand", "L'interroger"],
+                      ["Visiter Maison de Durand", "Fouiller la maison", "Trouver Durand", "L'interroger"],
                       "Aveux du meurtrier")
         self.quest_manager.add_quest(quest7)
 
@@ -326,9 +320,7 @@ class Game:
         required_items = {"photos", "couteau", "coffre", "arme"}
         
         if self.visited_crime_scene_rooms == required_rooms and self.collected_items == required_items:
-            quest1 = self.quest_manager.get_quest_by_title("Inspecter la maison du crime")
-            if quest1 and not quest1.is_completed:
-                quest1.complete_quest(self.player)
+            self.quest_manager.complete_quest("Inspecter la maison du crime", self.player)
 
     def play(self):
         self.setup()

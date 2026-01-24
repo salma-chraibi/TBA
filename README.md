@@ -61,7 +61,6 @@ Conditions de victoire :
 Conditions de defaite :
 - Accuser la mauvaise personne
 - Depasser 40 deplacements
-- Ne pas analyser les 6 objets
 
 Deplacements gratuits :
 - Grenier
@@ -190,12 +189,11 @@ Chimiste :
 
 Quete 1 : Inspecter la maison du crime  
 Quete 2 : Analyser les objets au Labo  
-Quete 3 : Aller a la Morgue  
-Quete 4 : Explorer les environs  
-Quete 5 : Inspecter chez Lenoir  
-Quete 6 : Analyser la lettre  
-Quete 7 : Inspecter chez Durand  
-Quete 8 : Resoudre l’enigme (accuser Durand)
+Quete 3 : Aller a la Morgue    
+Quete 4 : Inspecter chez Lenoir  
+Quete 5 : Analyser la lettre  
+Quete 6 : Inspecter chez Durand  
+Quete 7 : Resoudre l’enigme (accuser Durand)
 
 Quetes optionnelles :
 - Ouvrir le coffre

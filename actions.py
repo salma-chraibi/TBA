@@ -56,6 +56,9 @@ class Actions:
                 # Check if Quest 1 should be completed
                 game.check_quest1_completion()
             
+            # Check room objectives for all active quests
+            game.quest_manager.check_room_objectives(new_room.name)
+            
             # Count displacement if not in excluded rooms
             excluded_rooms = {"Grenier", "Jardin", "Cave", "Labo du commissariat"}
             if new_room.name not in excluded_rooms and old_room.name not in excluded_rooms:
@@ -323,6 +326,28 @@ class Actions:
             # Check if Quest 1 should be completed
             game.check_quest1_completion()
         
+        # Complete "Fouiller la maison" for Quest 4 when taking letter at Lenoir's house
+        if item_name == "lettre" and player.current_room.name == "Maison de Madame Lenoir":
+            game.quest_manager.complete_objective("Fouiller la maison")
+        
+        # Complete "Fouiller la maison" for Quest 6 when taking clé at Durand's house
+        if item_name == "clé" and player.current_room.name == "Maison de Durand":
+            game.quest_manager.complete_objective("Fouiller la maison")
+        
+        # Activate optional quests if items are collected
+        if item_name == "clé":
+            game.quest_manager.complete_objective("Trouver la clé")
+            if "coffre" in player.inventory:
+                game.quest_manager.activate_quest("Ouvrir le coffre")
+        if item_name == "coffre":
+            game.quest_manager.complete_objective("Récupérer le coffre")
+            if "clé" in player.inventory:
+                game.quest_manager.activate_quest("Ouvrir le coffre")
+        if item_name == "lettre":
+            game.quest_manager.complete_objective("Trouver la lettre")
+            game.quest_manager.complete_objective("Récupérer la lettre")
+            game.quest_manager.activate_quest("Lire la lettre mystérieuse")
+        
         return True
 
     def drop(game, list_of_words, number_of_parameters):
@@ -434,6 +459,21 @@ class Actions:
         
         # Display the character's message
         print(character.get_msg())
+        
+        # Complete objectives based on talking to specific characters
+        if target_name == "Médecin légiste":
+            game.quest_manager.complete_objective("Visiter Morgue")
+            game.quest_manager.complete_objective("Parler au Médecin légiste")
+        elif target_name == "Chimiste":
+            game.quest_manager.complete_objective("Parler au Chimiste")
+        elif target_name == "Lenoir":
+            game.quest_manager.complete_objective("Parler à Mme Lenoir")
+        elif target_name == "Durand":
+            # Durand can be found at: Maison de Durand, Rue de Montfleur, Maison du crime, Commissariat
+            if player.current_room.name in ["Maison de Durand", "Rue de Montfleur", "Maison du crime", "Commissariat"]:
+                game.quest_manager.complete_objective("Trouver Durand")
+                game.quest_manager.complete_objective("L'interroger")
+        
         return True
 
     def examine(game, list_of_words, number_of_parameters):
@@ -474,6 +514,9 @@ class Actions:
         
         if item_name in examinations:
             print(examinations[item_name])
+            if item_name == "lettre":
+                game.quest_manager.complete_objective("Lire la lettre")
+                game.quest_manager.complete_quest("Lire la lettre mystérieuse", game.player)
         else:
             print(f"\nVous examinez '{item_name}' mais ne trouvez rien d'intéressant.\n")
         
@@ -519,6 +562,8 @@ class Actions:
                 print("💡 DÉCOUVERTE MAJEURE:")
                 print("   Des documents secrets de Durand prouvant sa culpabilité!\n")
                 print("   Indice crucial: Durand est bien le coupable!\n")
+                game.quest_manager.complete_objective("Ouvrir le coffre")
+                game.quest_manager.complete_quest("Ouvrir le coffre", game.player)
             else:
                 print("\nLe coffre est déjà ouvert.\n")
             return True
@@ -532,6 +577,8 @@ class Actions:
                 print("💡 DÉCOUVERTE MAJEURE:")
                 print("   Des documents secrets de Durand prouvant sa culpabilité!\n")
                 print("   Indice crucial: Durand est bien le coupable!\n")
+                game.quest_manager.complete_objective("Ouvrir le coffre")
+                game.quest_manager.complete_quest("Ouvrir le coffre", game.player)
             else:
                 print("\nLe coffre est déjà ouvert.\n")
             return True
@@ -576,20 +623,23 @@ class Actions:
         # Record the accusation
         game.accused = accused_name
         
-        # Check if it's the correct person
-        if accused_name.lower() == "durand":
+        # Check win condition
+        if game.win():
             print(f"\nVous avez accusé {accused_name}.")
             print("Le policier l'arrête immédiatement.\n")
             # Activate Quest 8 and end the game
             quest8 = game.quest_manager.get_quest_by_title("Résoudre l'énigme")
             if quest8 and not quest8.is_completed:
                 quest8.complete_quest(game.player)
-            print("Bravo vous avez résolu l'affaire; Vous êtes un grand détective !")
             game.finished = True
         else:
-            print(f"\nVous avez accusé {accused_name}.")
-            print("Le policier vous regarde avec incrédulité.")
-            print("Les preuves ne correspondent pas à cette accusation.\n")
+            if accused_name.lower() == "durand":
+                print(f"\nVous avez accusé {accused_name}.")
+                print("Mais vous n'avez pas toutes les preuves nécessaires. Continuez l'enquête.\n")
+            else:
+                print(f"\nVous avez accusé {accused_name}.")
+                print("Le policier vous regarde avec incrédulité.")
+                print("Les preuves ne correspondent pas à cette accusation.\n")
         
         return True
 
@@ -645,9 +695,11 @@ class Actions:
             # Check if Quest 2 should be completed (all crime scene items analyzed)
             crime_scene_items = {"couteau", "arme", "photos", "coffre"}
             if crime_scene_items.issubset(game.analyzed_items):
-                quest2 = game.quest_manager.get_quest_by_title("Faire analyser les objets au Labo")
-                if quest2 and not quest2.is_completed:
-                    quest2.complete_quest(game.player)
+                game.quest_manager.complete_quest("Faire analyser les objets au Labo", game.player)
+            
+            # Check if Quest 5 should be completed (letter analyzed)
+            if item_name == "lettre":
+                game.quest_manager.complete_quest("Analyser les objets chez Lenoir", game.player)
         else:
             print(f"\nCet objet a déjà été analysé.\n")
         
@@ -689,14 +741,14 @@ class Actions:
         
         # Display chronological quests
         for i, quest in enumerate(game.quest_manager.quests, 1):
-            if i <= 8:  # Chronological quests
+            if i <= 7:  # Chronological quests
                 if quest.is_completed:
-                    active = "\033[92mFINISHED\033[0m"  # Green
+                    status = "(Finished)"
                 elif quest.is_active:
-                    active = "\033[91mACTIVE\033[0m"  # Red
+                    status = "(In progress)"
                 else:
-                    active = "\033[94mINACTIVE\033[0m"  # Blue
-                print(f"Quest {i}: {quest.title} ({active})")
+                    status = "(Not started)"
+                print(f"{status} Quest {i}: {quest.title}")
                 print(f"   Description: {quest.description}")
                 if quest.objectives:
                     print(f"   Objectifs: {', '.join(quest.objectives)}")
@@ -706,14 +758,14 @@ class Actions:
         
         # Display non-chronological quests
         for i, quest in enumerate(game.quest_manager.quests, 1):
-            if i > 8:  # Non-chronological quests
+            if i > 7:  # Non-chronological quests
                 if quest.is_completed:
-                    active = "\033[92mFINISHED\033[0m"  # Green
+                    status = "(Finished)"
                 elif quest.is_active:
-                    active = "\033[91mACTIVE\033[0m"  # Red
+                    status = "(In progress)"
                 else:
-                    active = "\033[94mINACTIVE\033[0m"  # Blue
-                print(f"{quest.title} ({active})")
+                    status = "(Not started)"
+                print(f"{status} {quest.title}")
                 print(f"   Description: {quest.description}")
                 if quest.objectives:
                     print(f"   Objectifs: {', '.join(quest.objectives)}")
