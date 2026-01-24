@@ -55,7 +55,7 @@ Elements importants :
 Conditions de victoire :
 1. Analyser les 6 objets : couteau, cle, lettre, coffre, photos, arme  
 2. Parler au Chimiste apres les analyses  
-3. Accuser Durand au Commissariat  
+3. Accuser Durand au Commissariat(il faut avoir les 6 objets analysés sinon le policier nous demande de trouver des preuves)
 4. Ne pas depasser 40 deplacements
 
 Conditions de defaite :

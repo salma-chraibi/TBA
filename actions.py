@@ -504,12 +504,12 @@ class Actions:
         
         # Item examinations with clues
         examinations = {
-            "clé": "\n🔑 EXAMEN DE LA CLÉ:\nC'est une vieille clé en laiton. Elle semble ouvrir un coffre ou un meuble.\nIndice: Elle provient de la maison de Durand...\n",
-            "lettre": "\n📄 LECTURE DE LA LETTRE:\nVous lisez la lettre écrite par un ami de Lenoir.\nLe contenu révèle: 'Durand cache quelque chose de grave. Cherche dans son coffre!'\nIndice important: Durand a quelque chose à cacher!\n",
-            "couteau": "\n🔪 EXAMEN DU COUTEAU:\nUn couteau ensanglanté, arme probable du crime.\nIndice: Les empreintes peuvent révéler le coupable.\n",
-            "photos": "\n📷 EXAMEN DES PHOTOS:\nDes photos troublantes montrant Durand en mauvaise compagnie.\nIndice: Des preuves de sa culpabilité potentielle.\n",
-            "arme": "\n🔫 EXAMEN DE L'ARME:\nUne arme dissimulée. Problématique.\nIndice: Qui possédait cette arme?\n",
-            "coffre": "\n📦 EXAMEN DU COFFRE:\nUn coffre fermé à clé. La clé pourrait l'ouvrir!\nCommande: use clé on coffre\nIndice: Le contenu pourrait prouver la culpabilité.\n"
+            "clé": "\n EXAMEN DE LA CLÉ:\nC'est une vieille clé en laiton. Elle semble ouvrir un coffre ou un meuble.\nIndice: Elle provient de la maison de Durand...\n",
+            "lettre": "\n LECTURE DE LA LETTRE:\nVous lisez la lettre écrite par un ami de Lenoir.\nLe contenu révèle: 'Durand cache quelque chose de grave. Cherche dans son coffre!'\nIndice important: Durand a quelque chose à cacher!\n",
+            "couteau": "\n EXAMEN DU COUTEAU:\nUn couteau ensanglanté, arme probable du crime.\nIndice: Les empreintes peuvent révéler le coupable.\n",
+            "photos": "\n EXAMEN DES PHOTOS:\nDes photos troublantes montrant Durand en mauvaise compagnie.\nIndice: Des preuves de sa culpabilité potentielle.\n",
+            "arme": "\n EXAMEN DE L'ARME:\nUne arme dissimulée. Problématique.\nIndice: Qui possédait cette arme?\n",
+            "coffre": "\n EXAMEN DU COFFRE:\nUn coffre fermé à clé. La clé pourrait l'ouvrir!\nCommande: use clé on coffre\nIndice: Le contenu pourrait prouver la culpabilité.\n"
         }
         
         if item_name in examinations:
@@ -557,9 +557,9 @@ class Actions:
         if item1 == "clé" and item2 == "coffre":
             if "clé_utilisée" not in game.flags:
                 game.flags.add("clé_utilisée")
-                print("\n🔑 Vous utilisez la clé sur le coffre.")
+                print("\n Vous utilisez la clé sur le coffre.")
                 print("Le coffre s'ouvre et révèle son contenu caché!\n")
-                print("💡 DÉCOUVERTE MAJEURE:")
+                print(" DÉCOUVERTE MAJEURE:")
                 print("   Des documents secrets de Durand prouvant sa culpabilité!\n")
                 print("   Indice crucial: Durand est bien le coupable!\n")
                 game.quest_manager.complete_objective("Ouvrir le coffre")
@@ -572,9 +572,9 @@ class Actions:
         elif item1 == "coffre" and item2 == "clé":
             if "clé_utilisée" not in game.flags:
                 game.flags.add("clé_utilisée")
-                print("\n🔑 Vous utilisez la clé sur le coffre.")
+                print("\n Vous utilisez la clé sur le coffre.")
                 print("Le coffre s'ouvre et révèle son contenu caché!\n")
-                print("💡 DÉCOUVERTE MAJEURE:")
+                print(" DÉCOUVERTE MAJEURE:")
                 print("   Des documents secrets de Durand prouvant sa culpabilité!\n")
                 print("   Indice crucial: Durand est bien le coupable!\n")
                 game.quest_manager.complete_objective("Ouvrir le coffre")
