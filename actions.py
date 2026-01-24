@@ -580,6 +580,12 @@ class Actions:
         if accused_name.lower() == "durand":
             print(f"\nVous avez accusé {accused_name}.")
             print("Le policier l'arrête immédiatement.\n")
+            # Activate Quest 8 and end the game
+            quest8 = game.quest_manager.get_quest_by_title("Résoudre l'énigme")
+            if quest8 and not quest8.is_completed:
+                quest8.complete_quest(game.player)
+            print("Bravo vous avez résolu l'affaire; Vous êtes un grand détective !")
+            game.finished = True
         else:
             print(f"\nVous avez accusé {accused_name}.")
             print("Le policier vous regarde avec incrédulité.")
@@ -633,8 +639,15 @@ class Actions:
         # Mark the item as analyzed
         if item_name not in game.analyzed_items:
             game.analyzed_items.add(item_name)
-            print(f"\n✓ Vous avez analysé: {item_name}")
+            print(f"\nVous avez analysé: {item_name}")
             print(f"Objets analysés: {len(game.analyzed_items)}/{len(game.required_items)}\n")
+            
+            # Check if Quest 2 should be completed (all crime scene items analyzed)
+            crime_scene_items = {"couteau", "arme", "photos", "coffre"}
+            if crime_scene_items.issubset(game.analyzed_items):
+                quest2 = game.quest_manager.get_quest_by_title("Faire analyser les objets au Labo")
+                if quest2 and not quest2.is_completed:
+                    quest2.complete_quest(game.player)
         else:
             print(f"\nCet objet a déjà été analysé.\n")
         
@@ -677,14 +690,13 @@ class Actions:
         # Display chronological quests
         for i, quest in enumerate(game.quest_manager.quests, 1):
             if i <= 8:  # Chronological quests
-                status = "✓" if quest.is_completed else "○"
                 if quest.is_completed:
                     active = "\033[92mFINISHED\033[0m"  # Green
                 elif quest.is_active:
                     active = "\033[91mACTIVE\033[0m"  # Red
                 else:
                     active = "\033[94mINACTIVE\033[0m"  # Blue
-                print(f"{status} Quest {i}: {quest.title} ({active})")
+                print(f"Quest {i}: {quest.title} ({active})")
                 print(f"   Description: {quest.description}")
                 if quest.objectives:
                     print(f"   Objectifs: {', '.join(quest.objectives)}")
@@ -695,14 +707,13 @@ class Actions:
         # Display non-chronological quests
         for i, quest in enumerate(game.quest_manager.quests, 1):
             if i > 8:  # Non-chronological quests
-                status = "✓" if quest.is_completed else "○"
                 if quest.is_completed:
                     active = "\033[92mFINISHED\033[0m"  # Green
                 elif quest.is_active:
                     active = "\033[91mACTIVE\033[0m"  # Red
                 else:
                     active = "\033[94mINACTIVE\033[0m"  # Blue
-                print(f"{status} {quest.title} ({active})")
+                print(f"{quest.title} ({active})")
                 print(f"   Description: {quest.description}")
                 if quest.objectives:
                     print(f"   Objectifs: {', '.join(quest.objectives)}")

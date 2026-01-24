@@ -125,17 +125,17 @@ class Quest:
         """
         if not self.is_completed:
             self.is_completed = True
-            print(f"\n\033[92m{'='*60}")
-            print(f"✅ Quête terminée: {self.title}")
-            print(f"{'='*60}\033[0m")
+            print(f"\n{'='*60}")
+            print(f"Quête terminée: {self.title}")
+            print(f"{'='*60}")
             
             # Display reward/clue message
             if self.reward:
-                print(f"\n💡 INDICE REÇU: {self.reward}\n")
+                print(f"\nINDICE REÇU: {self.reward}\n")
             
             # Display specific messages based on quest title
             if self.title == "Résoudre l'énigme":
-                print("Bravo, vous avez résolu l'enquête !")
+                print("Bravo vous avez résolu l'affaire; Vous êtes un grand détective !")
             elif self.title == "Ouvrir le coffre":
                 print("Vous avez découvert des secrets importants!")
             elif self.title == "Lire la lettre mystérieuse":
@@ -171,12 +171,12 @@ class Quest:
         '⏳ Collect (1/2 objectifs)'
         """
         if not self.is_active:
-            return f"❓ {self.title} (Non activée)"
+            return f"{self.title} (Non activée)"
         if self.is_completed:
-            return f"[OK] {self.title} (Terminée)"
+            return f"{self.title} (Terminée)"
         completed_count = len(self.completed_objectives)
         total_count = len(self.objectives)
-        return f"⏳ {self.title} ({completed_count}/{total_count} objectifs)"
+        return f"{self.title} ({completed_count}/{total_count} objectifs)"
 
 
     def get_details(self, current_counts=None):
@@ -508,8 +508,35 @@ class QuestManager:
                 # Remove completed quests from active list
                 if quest.is_completed:
                     self.active_quests.remove(quest)
+                    # Activate next chronological quest if applicable
+                    self.activate_next_chronological_quest(quest.title)
                 return True
         return False
+
+
+    def activate_next_chronological_quest(self, completed_quest_title):
+        """
+        Activate the next chronological quest if the completed quest is part of the main storyline.
+        
+        Args:
+            completed_quest_title (str): The title of the quest that was just completed.
+        """
+        quest_titles = [
+            "Inspecter la maison du crime",
+            "Faire analyser les objets au Labo",
+            "Aller à la morgue",
+            "Explorer les environs",
+            "Inspecter chez Mme Lenoir",
+            "Analyser les objets chez Lenoir",
+            "Inspecter chez Durand",
+            "Résoudre l'énigme"
+        ]
+        
+        if completed_quest_title in quest_titles:
+            index = quest_titles.index(completed_quest_title)
+            if index + 1 < len(quest_titles):
+                next_title = quest_titles[index + 1]
+                self.activate_quest(next_title)
 
 
     def check_room_objectives(self, room_name):
