@@ -48,6 +48,8 @@ Elements importants :
 - Indices caches dans plusieurs salles
 - Progression narrative lineaire
 
+>Perspectives de développement: ajouter une interface graphique, des scénarios différents, plusieurs niveaux de difficulté, plus de personnages dans le jeu, un système de sauvegarde pour que le joueur puisse revenir sur sa partie en cours à n'importe quel moment, une meilleure gestion des synonymes et des fautes de frappes. 
+
 ---
 
 ## 4. Regles du jeu
@@ -298,8 +300,6 @@ classDiagram
     Game --> Quest : "manages"
 ```
 
-''Vidéo de présentation:
 
-https://drive.google.com/file/d/1HYUGb9LnZnrx4iEjhmz9V-RTNbyPpx9N/view?usp=drive_link''
 
 
